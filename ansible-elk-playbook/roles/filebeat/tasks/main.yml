@@ -1,0 +1,43 @@
+
+---
+#
+# Installing filebeat
+#
+
+# Install filebeat
+
+- name: Install filebeat with apt
+  apt:
+   name: filebeat
+   update_cache: yes
+
+- name: Updating the port in config file
+  lineinfile:
+   destfile: /etc/filebeat/filebeat.yml
+   regexp: 'output.logstash'
+   line: 'hosts: ["localhost:5044"]'
+
+
+- name: Run the command 
+  command: sudo filebeat modules enable system
+
+- name: Run the command
+  command: sudo filebeat setup --pipelines --modules system
+
+- name: Run the command
+  command: sudo filebeat setup --index-management -E output.logstash.enabled=false -E 'output.elasticsearch.hosts=["localhost:9200"]'
+
+
+- name: Run the command
+  command: sudo filebeat setup -E output.logstash.enabled=false -E output.elasticsearch.hosts=['localhost:9200'] -E setup.kibana.host=localhost:5601
+
+
+# Starting filebeat
+
+- name: Starting filebeat
+  service:
+   name: filebeat
+   state: started
+
+- name: Run the command
+  command: curl -XGET 'http://localhost:9200/filebeat-*/_search?prettyi'

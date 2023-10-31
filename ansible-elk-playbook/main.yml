@@ -12,5 +12,6 @@
   - { role: logstash }
   - { role: kibana }
   - { role: metricbeat }
+  - { role: filebeat }
   - { role: some-data }
   - { role: restart-services }

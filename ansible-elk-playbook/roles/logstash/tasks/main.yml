@@ -1,6 +1,7 @@
 ---
 #
 # Installing logstash
+#
 
 # Install logstash
 
@@ -8,11 +9,27 @@
   apt:
    name: logstash
    update_cache: yes
- 
-   
-# Starting Kibana
+
+# updating the input & output templates with the jinja template 
+
+- name: copy the input jinja2 templates into destination file 
+  template:
+    src: /root/ansible/ansible-elk-playbook/roles/logstash/templates/input.j2
+    dest: /etc/logstash/conf.d/02-beats-input.conf
+
+- name: copy the output jinja2 template in destination 
+  template:
+    src: /root/ansible/ansible-elk-playbook/roles/logstash/templates/output.j2
+    dest: /etc/logstash/conf.d/30-elasticsearch-output.conf
+  
+# Use the command to test the logstash configuration  
+- name: Run the command 
+  command: sudo -u logstash /usr/share/logstash/bin/logstash --path.settings /etc/logstash -t
+
+# Starting logstash
 
 - name: Starting logstash
   service:
    name: logstash
    state: started
+
